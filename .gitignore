@@ -1,0 +1,29 @@
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+
+# Generated TeX — reproducible from book.py / cover.py, so not tracked
+the_book_color.tex
+the_book_bw.tex
+the_book_compact_color.tex
+the_book_compact_bw.tex
+cover.tex
+cover_proof.tex
+
+# Python bytecode cache
+__pycache__/
+
+# Scratch
+tail.py
+*.png
+
+# Built PDFs (ship via GitHub Release, not the repo)
+*.pdf
+dist/
+
+# Local Claude Code context (not shared)
+CLAUDE.md

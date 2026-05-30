@@ -1,0 +1,124 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{forme}[2026/05/29 Forme -- a print companion to Switchboard]
+%% Information lives in shape, weight, position and label.
+%% Colour is a removable garnish: [bw] drops it without losing meaning.
+
+\newif\ifforme@bw\forme@bwfalse
+\newif\ifforme@crop\forme@cropfalse
+\DeclareOption{color}{\forme@bwfalse}
+\DeclareOption{colour}{\forme@bwfalse}
+\DeclareOption{bw}{\forme@bwtrue}
+\DeclareOption{cropmarks}{\forme@croptrue}
+\ProcessOptions\relax
+
+\RequirePackage{geometry}
+\RequirePackage{fontspec}
+\RequirePackage{xcolor}
+\RequirePackage{amssymb}
+\RequirePackage{tikz}
+\usetikzlibrary{patterns}
+\RequirePackage{fancyhdr}
+
+%% --- trim size + mirrored binding margins (gutter on the inner edge)
+\geometry{paperwidth=105mm,paperheight=148mm,twoside,
+  inner=14mm,outer=8.5mm,top=8.5mm,bottom=12mm,footskip=5.5mm}
+
+%% --- palette: paper, one ink, one signal.
+%%     bw collapses signal->ink and darkens ink to true black for laser/photocopy.
+\ifforme@bw
+  \definecolor{ink}{HTML}{000000}
+  \definecolor{signal}{HTML}{000000}
+\else
+  \definecolor{ink}{HTML}{1B2A33}
+  \definecolor{signal}{HTML}{DC424C}
+\fi
+\definecolor{paper}{HTML}{FFFFFF}
+\color{ink}
+
+%% --- type: Barlow for text, Space Mono for data (move lists, coords, folios)
+\def\forme@fp{fonts/}
+\setmainfont{Barlow}[Path=\forme@fp,
+  UprightFont=Barlow-Regular.ttf, BoldFont=Barlow-Bold.ttf,
+  ItalicFont=Barlow-Italic.ttf,  BoldItalicFont=Barlow-BoldItalic.ttf]
+\setsansfont{Barlow}[Path=\forme@fp,
+  UprightFont=Barlow-Regular.ttf, BoldFont=Barlow-Bold.ttf,
+  ItalicFont=Barlow-Italic.ttf,  BoldItalicFont=Barlow-BoldItalic.ttf]
+\setmonofont{Space Mono}[Path=\forme@fp,
+  UprightFont=SpaceMono-Regular.ttf, BoldFont=SpaceMono-Bold.ttf,
+  ItalicFont=SpaceMono-Italic.ttf,  BoldItalicFont=SpaceMono-BoldItalic.ttf]
+
+%% --- marks. \bookmark is the book's piece: signal-coloured, but its meaning
+%%     is carried by a ring drawn in the board code, so [bw] still reads.
+\newcommand{\pmark}[1]{\textbf{\Huge\color{ink}#1}}
+\newcommand{\bookmark}[1]{\textbf{\Huge\color{signal}#1}}
+
+%% --- data font (checklist columns, coordinates)
+\newcommand{\fmdata}{\ttfamily}
+
+%% --- hatches. Tone and texture that survive [bw]: every fill is drawn in ink,
+%%     so it reads in pure black on a photocopier. Four named densities, built
+%%     from the classic (always-available) tikz patterns.
+%%     \fmhatch{STYLE}{WIDTH}{HEIGHT} stamps a hatched rectangle inline;
+%%     the same style names work directly: \draw[fmlines] ... etc.
+\tikzset{
+  fmlines/.style={pattern=north east lines,pattern color=ink},
+  fmgrid/.style ={pattern=grid,pattern color=ink},
+  fmdots/.style ={pattern=dots,pattern color=ink},
+  fmcross/.style={pattern=crosshatch,pattern color=ink}}
+\newcommand{\fmhatch}[3]{%
+  \begin{tikzpicture}[baseline=0pt]\draw[ink,line width=0.5pt,#1] (0,0) rectangle (#2,#3);\end{tikzpicture}}
+
+%% --- stamped label, for outcomes and section tags (reads in colour and b/w)
+\newcommand{\fmlabel}[1]{%
+  \begin{center}\colorbox{ink}{%
+    \rule[-0.28em]{0pt}{1.15em}\hspace{0.45em}%
+    {\ttfamily\bfseries\color{paper}#1}\hspace{0.45em}}\end{center}}
+
+%% --- folio (page number) in mono, centred
+%% --- the parallel "history of machines that play" track, in the foot margin
+\providecommand{\fmticks}{}
+\newcommand{\pagebeat}[2]{\def\fmfrac{#1}\def\fmlab{#2}}
+\pagebeat{0}{}
+\newcommand{\fmtimeline}{%
+  \begin{tikzpicture}[overlay,remember picture]
+    \coordinate (pc) at (current page.south);
+    %% centre the foot track under the *text column*, not the page: the block is
+    %% offset (inner-outer)/2 = 2.75mm toward the outer edge, mirrored each spread.
+    \ifodd\value{page}\gdef\fmsh{2.75}\else\gdef\fmsh{-2.75}\fi
+    \pgfmathsetmacro{\fmlo}{\fmsh-40}\pgfmathsetmacro{\fmhi}{\fmsh+40}%
+    \draw[ink,line width=0.4pt] ([yshift=6mm,xshift=\fmlo mm]pc)--([yshift=6mm,xshift=\fmhi mm]pc);
+    \foreach \t in \fmticks {\pgfmathsetmacro{\tx}{\t*80-40+\fmsh}%
+      \draw[ink,line width=0.4pt] ([yshift=4.8mm,xshift=\tx mm]pc)--([yshift=7.2mm,xshift=\tx mm]pc);}%
+    \pgfmathsetmacro{\mx}{\fmfrac*80-40+\fmsh}%
+    \fill[signal] ([yshift=6mm,xshift=\mx mm]pc) circle (0.8mm);
+    \ifodd\value{page}
+      \node[ink,font=\ttfamily\bfseries,inner sep=0pt,anchor=south east]
+        at ([xshift=-8mm,yshift=9.2mm]current page.south east){\fontsize{10}{12}\selectfont\thepage};
+    \else
+      \node[ink,font=\ttfamily\bfseries,inner sep=0pt,anchor=south west]
+        at ([xshift=8mm,yshift=9.2mm]current page.south west){\fontsize{10}{12}\selectfont\thepage};
+    \fi
+    \ifx\fmlab\empty\else
+      \node[ink,align=center,inner sep=0pt,font=\ttfamily] at ([yshift=10.6mm,xshift=\fmsh mm]pc){\fontsize{6}{7}\selectfont\fmlab};
+    \fi
+    % fore-edge staircase index: a tab that descends the outer edge as pages advance
+    \pgfmathsetmacro{\fey}{14+\fmfrac*118}%
+    \ifodd\value{page}
+      \fill[ink] ([xshift=-5mm,yshift=-\fey mm]current page.north east) rectangle ++(2.6mm,1.7mm);
+    \else
+      \fill[ink] ([xshift=2.4mm,yshift=-\fey mm]current page.north west) rectangle ++(2.6mm,1.7mm);
+    \fi
+  \end{tikzpicture}}
+\pagestyle{fancy}\fancyhf{}
+\fancyfoot[C]{\fmtimeline}
+\renewcommand{\headrulewidth}{0pt}
+\setlength{\parindent}{0pt}
+\setlength{\emergencystretch}{2em}
+
+%% --- optional registration/crop marks for a bindery (needs a larger sheet)
+\ifforme@crop
+  \IfFileExists{crop.sty}{%
+    \RequirePackage[cam,center,paperwidth=12.6cm,paperheight=16.6cm]{crop}}{}
+\fi
+
+\endinput
