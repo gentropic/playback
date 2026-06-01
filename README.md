@@ -65,9 +65,9 @@ SHA-256 of `book.py` + `forme.sty` so any copy can be traced to its source.
 
 ## Print specifications
 
-A6 (105 × 148 mm) hardcover. Interior on Sulfite 90 g, 1×1 black-and-white
-(90 g for opacity — the solid marks would ghost through 75 g). Cover on matte
-coated stock with matte lamination, 4×0.
+A6 (105 × 148 mm) hardcover. Interior on Pólen 90 g (cream book stock, chosen for
+opacity and feel — the solid marks would ghost through a thinner sheet), 1×1
+black-and-white. Cover on matte coated stock with matte lamination, 4×0.
 
 ## Licensing
 
