@@ -5,10 +5,9 @@ total width = 256 + spine.  Spine is PARAMETRIC -- set SPINE_MM from Futura's
 calculadora de lombada (474 pages, Sulfite 90g, capa dura) for the final file.
 Outputs a clean wrap and a proof with guide lines."""
 
-SPINE_MM   = 17.0     # <-- PENDING: this is the Sulfite 90g value (155 folhas = 17mm).
-                      # Interior is now Polen 90g (bulkier) -> re-run Futura's lombada
-                      # calc with "Polen 90g" + 155 folhas and set that number here
-                      # before printing. Polen will be larger (likely ~20-24mm).
+SPINE_MM   = 17.0     # FINAL. Futura's lombada calc, 155 folhas (310pp) = 17mm.
+                      # Interior is Polen 90g, but Futura instructed to calculate the
+                      # spine using the Sulfite 90g setting -> 17mm. Confirmed by them.
 BLEED, SAFE, GAP, TRIM, H = 15.0, 10.0, 8.0, 105.0, 188.0
 S = SPINE_MM
 TOTAL_W = 2*BLEED + 2*TRIM + 2*GAP + S        # = 256 + S
