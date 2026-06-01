@@ -154,27 +154,47 @@ Worth remembering for the next thing, not this one.
 
 ---
 
-## 6. The deterministic alternative — Ghostscript (recommended path)
+## 6. The deterministic alternative — Ghostscript (the path we used)
 
-The two things people reach for Affinity to do — **PDF/X wrapping** and
-**text→curves** — both have one-line Ghostscript equivalents that keep us in the
-reproducible CLI pipeline. (Ghostscript is **not currently installed** on this
-machine — `gs`/`gswin64c` absent from PATH — so these are the documented path for
-when/if Futura requires them.)
+Futura's instructions (Cod.73, page 8) require all four: **fonts→curves**, **CMYK**,
+**PDF/X-1a**, and **bleed + trim marks**. All four are done with Ghostscript on our
+existing PDFs, staying in the reproducible pipeline — **no Affinity round-trip**.
+This is implemented in **`make_pdfx.sh`** (committed); below is what it does and the
+gotchas we hit getting there. (Ghostscript 10.07.1, installed from ghostscript.com
+to `C:\Program Files\gs\gs10.07.1\`, not on PATH — the script calls it by full path.)
 
-PDF/X-1a (needs a small ICC + def file, but the core is):
+Core invocation per file:
 ```sh
-gswin64c -dPDFX -dBATCH -dNOPAUSE -sColorConversionStrategy=CMYK \
+gswin64c -dPDFX -dBATCH -dNOPAUSE --permit-file-read=_cmyk.icc \
+  -sColorConversionStrategy=CMYK -dNoOutputFonts \
+  -dPDFXTrimBoxToMediaBoxOffset="{INSET INSET INSET INSET}" \
+  -dPDFXSetBleedBoxToMediaBox=true \
   -sDEVICE=pdfwrite -dPDFSETTINGS=/prepress \
-  -sOutputFile=miolo_X1a.pdf PDFX_def.ps the_book_compact_bw_bleed.pdf
+  -sOutputFile=out_x1a.pdf _pdfx_def.ps in.pdf
 ```
+- `-dNoOutputFonts` → every glyph becomes a vector outline (verify: `pdffonts` lists none).
+- `-sColorConversionStrategy=CMYK` → CMYK output (verify: zero `rg/RG` ops in streams).
+- `_pdfx_def.ps` → a pdfmark def that embeds the **output-intent ICC** (required for
+  valid X-1a); uses GS's bundled `default_cmyk.icc`.
+- INSET = bleed in pt: **miolo 5mm = 14.173**, **cover 15mm = 42.520**.
 
-Text → curves (outline all fonts, no font embedding needed):
-```sh
-gswin64c -o outlined.pdf -sDEVICE=pdfwrite -dNoOutputFonts cover.pdf
-```
-`-dNoOutputFonts` re-emits every glyph as vector outlines. Verify afterwards with
-`pdffonts outlined.pdf` (should list **no** fonts).
+### Gotchas (each cost a round-trip; documented so they don't again)
+1. **Git-Bash mangles `/Name` PostScript args** (e.g. `/DeviceCMYK` →
+   `C:/Program Files/Git/DeviceCMYK`). Fix: `export MSYS_NO_PATHCONV=1`.
+2. **PostScript `file` op can't read a path with spaces** ("Program Files") and
+   `-dSAFER` blocks it. Fix: copy the ICC to a local space-free name (`_cmyk.icc`)
+   and pass `--permit-file-read=_cmyk.icc`.
+3. **TrimBox: do NOT use `[/TrimBox ...] /PAGES pdfmark` under `-dPDFX`** — the
+   device re-asserts TrimBox = MediaBox and your pdfmark is ignored. The correct
+   mechanism is the distiller params **`-dPDFXTrimBoxToMediaBoxOffset`** (insets the
+   TrimBox) + **`-dPDFXSetBleedBoxToMediaBox=true`** (BleedBox = full sheet, which is
+   what we want since the bleed *is* the full extra area). This was the key fix.
+
+### Verified result (both files)
+`miolo_x1a.pdf` (310pp) and `cover_x1a.pdf` (1pp): MediaBox = full bleed sheet,
+**TrimBox inset to the real cut line** (105×148 / 243×158), **0 fonts** (all curves),
+**output intent embedded**, **0 RGB ops**. Rendered pages confirmed visually intact.
+These two files are what you upload to Futura.
 
 ---
 
