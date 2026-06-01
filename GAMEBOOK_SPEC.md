@@ -206,6 +206,20 @@ class Renderer(Protocol):
 - A separate **PdfxStep** wraps output as PDF/X-1a (the `make_pdfx.sh` recipe:
   curves via `-dNoOutputFonts`, CMYK, `-dPDFXTrimBoxToMediaBoxOffset`).
 
+### 9.1 Trim/bleed profiles (one renderer, many printers)
+A renderer takes a **trim profile**: `{trim_w, trim_h, bleed, safety, spine_fn}`.
+The same node graph then targets different printers by swapping the profile —
+`forme.sty`'s `[bleed]` option already parameterises this; generalise it from a
+single 5 mm value to arbitrary trim + bleed. Concrete planned profiles:
+- **Futura Cod. 73** — A6 105×148, bleed 5 mm, spine 17 mm *(the current build)*.
+- **Lulu Pocket** — 108×174, bleed 3.175 mm, safety 12.7 mm, Lulu spine formula
+  *(a sibling edition — different trim ⇒ text reflows ⇒ re-verify the page-count
+  invariant, and the ghost-grid/two-up layout needs an eyeball, not just a reflow)*.
+
+This re-target is the concrete near-term motivation for keeping trim swappable. See
+**`DISTRIBUTION.md`** for the full Lulu plan, rationale (free listing, zero markup,
+no inventory/tax), and the step-by-step re-target checklist.
+
 ---
 
 ## 10. API sketch
