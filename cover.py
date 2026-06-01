@@ -29,6 +29,54 @@ back_cx, front_cx, sp_cx = (back_x0+back_x1)/2, (front_x0+front_x1)/2, (sp_x0+sp
 
 FONTS="fonts/"   # relative to repo root, where cover.tex is compiled
 
+ISBN13="978-65-02-14290-5"
+
+# --- EAN-13 encoder (verified by round-trip + check digit; see git history) ----
+_L={'0':'0001101','1':'0011001','2':'0010011','3':'0111101','4':'0100011',
+    '5':'0110001','6':'0101111','7':'0111011','8':'0110111','9':'0001011'}
+_G={'0':'0100111','1':'0110011','2':'0011011','3':'0100001','4':'0011101',
+    '5':'0111001','6':'0000101','7':'0010001','8':'0001001','9':'0010111'}
+_R={'0':'1110010','1':'1100110','2':'1101100','3':'1000010','4':'1011100',
+    '5':'1001110','6':'1010000','7':'1000100','8':'1001000','9':'1110100'}
+_PARITY={'0':'LLLLLL','1':'LLGLGG','2':'LLGGLG','3':'LLGGGL','4':'LGLLGG',
+         '5':'LGGLLG','6':'LGGGLL','7':'LGLGLG','8':'LGLGGL','9':'LGGLGL'}
+def _ean_checkdigit(d12):
+    s=sum((1 if i%2==0 else 3)*int(c) for i,c in enumerate(d12))
+    return str((10-s%10)%10)
+def ean13_bits(isbn):
+    d="".join(c for c in isbn if c.isdigit())
+    assert len(d)==13 and _ean_checkdigit(d[:12])==d[12], f"bad EAN-13: {isbn}"
+    bits="101"
+    for ch,par in zip(d[1:7],_PARITY[d[0]]): bits+=(_L[ch] if par=='L' else _G[ch])
+    bits+="01010"
+    for ch in d[7:]: bits+=_R[ch]
+    bits+="101"
+    assert len(bits)==95
+    return bits
+def ean13_tikz(x0,y0,bar_w,bar_h,isbn,digit_h=2.6):
+    """Draw EAN-13 with (x0,y0) the bottom of the DIGIT strip; bars sit above it.
+    Guard bars (start/centre/end) extend down THROUGH the digit strip for the
+    classic look; data bars stop at the strip top. Digits sit in the strip."""
+    bits=ean13_bits(isbn); d="".join(c for c in isbn if c.isdigit())
+    out=[]; guards={0,1,2,45,46,47,48,49,92,93,94}
+    by0=y0+digit_h                                   # data-bar bottom = top of digit strip
+    i=0
+    while i<95:
+        if bits[i]=='1':
+            j=i
+            while j<95 and bits[j]=='1': j+=1
+            run_guard = all(k in guards for k in range(i,j))
+            bottom = y0 if run_guard else by0           # guards drop to digit baseline
+            out.append(rf"\fill[ink] ({x0+i*bar_w},{bottom}) rectangle ({x0+j*bar_w},{by0+bar_h});")
+            i=j
+        else: i+=1
+    # human-readable, baseline centred in the digit strip
+    ty=y0+0.5
+    out.append(rf"\node[ink,font=\mono,anchor=base east,inner sep=0pt] at ({x0-0.4},{ty}) {{{d[0]}}};")
+    out.append(rf"\node[ink,font=\mono,anchor=base,inner sep=0pt] at ({x0+(3+21)*bar_w},{ty}) {{{d[1:7]}}};")
+    out.append(rf"\node[ink,font=\mono,anchor=base,inner sep=0pt] at ({x0+(50+21)*bar_w},{ty}) {{{d[7:]}}};")
+    return "\n".join(out)
+
 def doc(show_guides):
     # real motif sized to NEST inside the centre cell of the ghost grid below;
     # board = 3*c must sit clear inside one ghost cell (GC).
@@ -78,6 +126,14 @@ def doc(show_guides):
     # clip the whole ghost layer to the front panel so nothing spills onto spine/back
     ghost=(rf"\begin{{scope}}\clip ({front_x0},0) rectangle ({front_x1},{H});"
            +"\n"+"\n".join([ghost_grid]+ghost_games)+"\n"+r"\end{scope}")
+
+    # --- EAN-13 barcode rendered inside the white reserve box ---
+    box_x0=back_x1-SAFE-BOX_W; box_y0=BLEED+SAFE
+    bar_w=EAN_W/95.0                              # 37.29mm over 95 modules
+    bar_x0=box_x0+EAN_PAD                         # left quiet zone = EAN_PAD
+    dig_y0=box_y0+EAN_PAD                         # digit-strip bottom (above bottom pad)
+    bar_h=EAN_H-EAN_TEXT                          # bar height above the digit strip
+    barcode=ean13_tikz(bar_x0,dig_y0,bar_w,bar_h,ISBN13,digit_h=EAN_TEXT)
 
     guides=""
     if show_guides:
@@ -138,9 +194,10 @@ def doc(show_guides):
     crack --- play perfectly and you can \textbf{{beat it}}.\\[4pt]
     310 pages, 229 decisions, every reply precomputed by minimax --- and a matchbox
     machine that teaches itself to play.}};
-% reserved EAN-13 quiet zone: white box sized to GS1 spec at {EAN_MAG:.0%} ({BOX_W:.1f}x{BOX_H:.1f}mm),
-% bottom-right of the back panel; drop the barcode in here once the ISBN issues.
+% EAN-13 barcode in its white quiet-zone box, GS1 {EAN_MAG:.0%} ({BOX_W:.1f}x{BOX_H:.1f}mm),
+% bottom-right of the back panel. Bars encoded from ISBN {ISBN13} (round-trip verified).
 \fill[paper] ({back_x1-SAFE-BOX_W},{BLEED+SAFE}) rectangle ({back_x1-SAFE},{BLEED+SAFE+BOX_H});
+{barcode}
 % footer bottom-left; lines pre-broken so the long URL can't overflow into the
 % barcode box. text width caps short of the box's left edge with clearance.
 \node[paper,align=left,font=\mono\scriptsize,text width=40mm,anchor=south west] at ({back_x0+SAFE},{BLEED+SAFE})
