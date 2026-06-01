@@ -28,3 +28,4 @@ dist/
 
 # Local Claude Code context (not shared)
 CLAUDE.md
+.claude/
