@@ -197,8 +197,8 @@ def doc(show_guides):
 % blurb vertically centred in the panel (optical balance between top air and the
 % footer/barcode row); anchor=west pins its mid-height to the panel centre line.
 \node[paper,align=left,font=\mono\footnotesize,text width=82mm,anchor=west] at ({back_x0+SAFE},{H/2})
-  {{A book you play against. It moves; you reply by turning to the page it names ---
-    where it has already answered.\\[4pt]
+  {{A book you play against. You make a move, turn to the page it sends you to, and
+    find it has already replied.\\[4pt]
     Five games live inside. At tic-tac-toe, hexapawn and notakto it
     \textbf{{cannot lose}}; at twenty-one it always wins. But at nim it has left one
     crack --- play perfectly and you can \textbf{{beat it}}.\\[4pt]
