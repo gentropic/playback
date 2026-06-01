@@ -163,7 +163,9 @@ def doc(show_guides):
 \pagestyle{{empty}}\setlength{{\parindent}}{{0pt}}
 \begin{{document}}
 \begin{{tikzpicture}}[x=1mm,y=1mm,remember picture,overlay,shift={{(current page.south west)}}]
-\fill[ink] (0,0) rectangle ({TOTAL_W},{H});
+% ink ground overshoots the page by 5mm on every side so no sub-pixel sliver of
+% white can appear at any trimmed edge (the whole cover is a full-bleed dark field).
+\fill[ink] (-5,-5) rectangle ({TOTAL_W+5},{H+5});
 
 % ---------- GHOST GRID (faint, behind the front motif) ----------
 {ghost}
