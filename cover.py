@@ -80,7 +80,7 @@ def ean13_tikz(x0,y0,bar_w,bar_h,isbn,digit_h=2.6):
 def doc(show_guides):
     # real motif sized to NEST inside the centre cell of the ghost grid below;
     # board = 3*c must sit clear inside one ghost cell (GC).
-    motif_cx, motif_cy, c = front_cx, 80, 7.5       # tic-tac-toe motif, cell 7.5mm -> 22.5mm board
+    motif_cx, motif_cy, c = front_cx, 72, 7.0       # tic-tac-toe motif, cell 7mm -> 21mm board
     gx0, gy0 = motif_cx-1.5*c, motif_cy-1.5*c
     def cell(col,row): return (gx0+col*c+c/2, gy0+(2-row)*c+c/2)
     marks=[]
@@ -100,7 +100,7 @@ def doc(show_guides):
     # --- ghost grid: a faint 3x3 behind the motif; the real board nests in the
     #     centre cell, the 8 others hold real, legally-reachable final positions
     #     ("every game already played"). Front panel only. ---
-    GC=26.0                                   # ghost cell; frames the 22.5mm motif with margin
+    GC=23.0                                   # ghost cell; frames the 21mm motif with margin
     GCW="ink!84!paper"; GMK="ink!82!paper"; GLN="ink!86!paper"   # tuning B (faint)
     ggx0,ggy0=motif_cx-1.5*GC, motif_cy-1.5*GC
     # just the tic-tac-toe "#" (no outer border) -- the four interior lines, full span
@@ -128,9 +128,12 @@ def doc(show_guides):
            +"\n"+"\n".join([ghost_grid]+ghost_games)+"\n"+r"\end{scope}")
 
     # --- EAN-13 barcode rendered inside the white reserve box ---
+    # GS1 nominal width spans 113 modules: 11-module left quiet zone + 95 symbol
+    # + 7-module right quiet zone. bar_w from /113 (not /95) so the lead digit's
+    # quiet zone is preserved and the symbol stays inside the white box.
     box_x0=back_x1-SAFE-BOX_W; box_y0=BLEED+SAFE
-    bar_w=EAN_W/95.0                              # 37.29mm over 95 modules
-    bar_x0=box_x0+EAN_PAD                         # left quiet zone = EAN_PAD
+    bar_w=EAN_W/113.0                             # 37.29mm over 113 modules (incl. quiet zones)
+    bar_x0=box_x0+EAN_PAD+11*bar_w               # symbol starts after the 11-module left quiet zone
     dig_y0=box_y0+EAN_PAD                         # digit-strip bottom (above bottom pad)
     bar_h=EAN_H-EAN_TEXT                          # bar height above the digit strip
     barcode=ean13_tikz(bar_x0,dig_y0,bar_w,bar_h,ISBN13,digit_h=EAN_TEXT)
@@ -152,7 +155,8 @@ def doc(show_guides):
     return rf"""\documentclass{{article}}
 \usepackage[paperwidth={TOTAL_W}mm,paperheight={H}mm,margin=0mm]{{geometry}}
 \usepackage{{fontspec}}\usepackage{{xcolor}}\usepackage{{tikz}}
-\definecolor{{ink}}{{HTML}}{{1B2A33}}\definecolor{{signal}}{{HTML}}{{DC424C}}\definecolor{{paper}}{{HTML}}{{FFFFFF}}
+% CMYK for press output (Futura: "CMYK, never RGB"); builds per FORME.md.
+\definecolor{{ink}}{{cmyk}}{{0.47,0.18,0,0.80}}\definecolor{{signal}}{{cmyk}}{{0,0.70,0.65,0.14}}\definecolor{{paper}}{{cmyk}}{{0,0,0,0}}
 \setmainfont{{Barlow}}[Path={FONTS},UprightFont=Barlow-Regular.ttf,BoldFont=Barlow-Bold.ttf,ItalicFont=Barlow-Italic.ttf,BoldItalicFont=Barlow-BoldItalic.ttf]
 \newfontfamily\mono{{Space Mono}}[Path={FONTS},UprightFont=SpaceMono-Regular.ttf,BoldFont=SpaceMono-Bold.ttf,ItalicFont=SpaceMono-Italic.ttf,BoldItalicFont=SpaceMono-BoldItalic.ttf]
 \pagestyle{{empty}}\setlength{{\parindent}}{{0pt}}
@@ -166,12 +170,15 @@ def doc(show_guides):
 % ---------- FRONT COVER (CAPA, right panel) ----------
 \node[paper,align=center] at ({front_cx},150)
   {{\bfseries\fontsize{{34}}{{37}}\selectfont The Book\\[1pt]\fontsize{{17}}{{19}}\selectfont That Plays Back}};
-\draw[signal,line width=1.2pt] ({front_cx-22},134)--({front_cx+22},134);
-\node[paper,align=center,font=\mono\small] at ({front_cx},126)
+\draw[signal,line width=1.2pt] ({front_cx-22},139)--({front_cx+22},139);
+\node[paper,align=center,font=\mono\small] at ({front_cx},130)
   {{an unbeatable game of tic-tac-toe\\--- and other games ---}};
+% author byline (matches the interior title page); GCU stays the publisher at the foot
+\node[paper,align=center,font=\bfseries] at ({front_cx},120)
+  {{Arthur Endlein Correia}};
 {grid_lines}
 {marks}
-\node[paper,align=center,font=\mono\scriptsize] at ({front_cx},34)
+\node[paper,align=center,font=\mono\scriptsize] at ({front_cx},30)
   {{GEOSCIENTIFIC CHAOS UNION}};
 
 % ---------- SPINE (LOMBADA) ----------

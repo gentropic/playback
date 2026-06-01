@@ -5,10 +5,12 @@
 
 \newif\ifforme@bw\forme@bwfalse
 \newif\ifforme@crop\forme@cropfalse
+\newif\ifforme@bleed\forme@bleedfalse
 \DeclareOption{color}{\forme@bwfalse}
 \DeclareOption{colour}{\forme@bwfalse}
 \DeclareOption{bw}{\forme@bwtrue}
 \DeclareOption{cropmarks}{\forme@croptrue}
+\DeclareOption{bleed}{\forme@bleedtrue}   %% +5mm print bleed (grows paper+margins equally)
 \ProcessOptions\relax
 
 \RequirePackage{geometry}
@@ -19,20 +21,33 @@
 \usetikzlibrary{patterns}
 \RequirePackage{fancyhdr}
 
-%% --- trim size + mirrored binding margins (gutter on the inner edge)
-\geometry{paperwidth=105mm,paperheight=148mm,twoside,
-  inner=14mm,outer=8.5mm,top=8.5mm,bottom=12mm,footskip=5.5mm}
+%% --- trim size + mirrored binding margins (gutter on the inner edge).
+%%     [bleed] grows the SHEET by 5mm on every side AND adds 5mm to every margin,
+%%     so the text block (and thus line breaks + page count) is byte-identical to
+%%     the no-bleed build -- only extra paper appears outside the trim. The trim is
+%%     then the rectangle 5mm inside the sheet on all sides. Overlays (foot track,
+%%     folio, fore-edge tab) are anchored to page edges, so [bleed] shifts each of
+%%     them back inward by 5mm (see \fmbl) to keep them on the trimmed page.
+\ifforme@bleed \def\fmbl{5}\else \def\fmbl{0}\fi
+%% NB: write "\fmbl mm+\fmbl mm" not "2\fmbl mm" -- TeX concatenates 2 and \fmbl
+%% textually (2 then 0 -> "20mm"), so the doubled bleed must be added, not multiplied.
+\geometry{paperwidth=\dimexpr105mm+\fmbl mm+\fmbl mm\relax,
+          paperheight=\dimexpr148mm+\fmbl mm+\fmbl mm\relax,twoside,
+  inner=\dimexpr14mm+\fmbl mm\relax, outer=\dimexpr8.5mm+\fmbl mm\relax,
+  top=\dimexpr8.5mm+\fmbl mm\relax, bottom=\dimexpr12mm+\fmbl mm\relax,
+  footskip=5.5mm}
 
-%% --- palette: paper, one ink, one signal.
-%%     bw collapses signal->ink and darkens ink to true black for laser/photocopy.
+%% --- palette: paper, one ink, one signal. Defined in CMYK for press output
+%%     (Futura: "CMYK, never RGB"). Builds per FORME.md; bw collapses signal->ink
+%%     and darkens ink to true black (registration-clean K-only) for the mono press.
 \ifforme@bw
-  \definecolor{ink}{HTML}{000000}
-  \definecolor{signal}{HTML}{000000}
+  \definecolor{ink}{cmyk}{0,0,0,1}
+  \definecolor{signal}{cmyk}{0,0,0,1}
 \else
-  \definecolor{ink}{HTML}{1B2A33}
-  \definecolor{signal}{HTML}{DC424C}
+  \definecolor{ink}{cmyk}{0.47,0.18,0,0.80}
+  \definecolor{signal}{cmyk}{0,0.70,0.65,0.14}
 \fi
-\definecolor{paper}{HTML}{FFFFFF}
+\definecolor{paper}{cmyk}{0,0,0,0}
 \color{ink}
 
 %% --- type: Barlow for text, Space Mono for data (move lists, coords, folios)
@@ -81,7 +96,8 @@
 \pagebeat{0}{}
 \newcommand{\fmtimeline}{%
   \begin{tikzpicture}[overlay,remember picture]
-    \coordinate (pc) at (current page.south);
+    %% (pc) is the trim's bottom-centre: page.south rises by \fmbl when bleed is on.
+    \coordinate (pc) at ([yshift=\fmbl mm]current page.south);
     %% centre the foot track under the *text column*, not the page: the block is
     %% offset (inner-outer)/2 = 2.75mm toward the outer edge, mirrored each spread.
     \ifodd\value{page}\gdef\fmsh{2.75}\else\gdef\fmsh{-2.75}\fi
@@ -91,22 +107,26 @@
       \draw[ink,line width=0.4pt] ([yshift=4.8mm,xshift=\tx mm]pc)--([yshift=7.2mm,xshift=\tx mm]pc);}%
     \pgfmathsetmacro{\mx}{\fmfrac*80-40+\fmsh}%
     \fill[signal] ([yshift=6mm,xshift=\mx mm]pc) circle (0.8mm);
+    %% folio: offsets include \fmbl so it stays clear of the trim edge under bleed
+    \pgfmathsetmacro{\fmfx}{8+\fmbl}\pgfmathsetmacro{\fmfy}{9.2+\fmbl}%
     \ifodd\value{page}
       \node[ink,font=\ttfamily\bfseries,inner sep=0pt,anchor=south east]
-        at ([xshift=-8mm,yshift=9.2mm]current page.south east){\fontsize{10}{12}\selectfont\thepage};
+        at ([xshift=-\fmfx mm,yshift=\fmfy mm]current page.south east){\fontsize{10}{12}\selectfont\thepage};
     \else
       \node[ink,font=\ttfamily\bfseries,inner sep=0pt,anchor=south west]
-        at ([xshift=8mm,yshift=9.2mm]current page.south west){\fontsize{10}{12}\selectfont\thepage};
+        at ([xshift=\fmfx mm,yshift=\fmfy mm]current page.south west){\fontsize{10}{12}\selectfont\thepage};
     \fi
     \ifx\fmlab\empty\else
       \node[ink,align=center,inner sep=0pt,font=\ttfamily] at ([yshift=10.6mm,xshift=\fmsh mm]pc){\fontsize{6}{7}\selectfont\fmlab};
     \fi
-    % fore-edge staircase index: a tab that descends the outer edge as pages advance
-    \pgfmathsetmacro{\fey}{14+\fmfrac*118}%
+    % fore-edge staircase index: a tab that descends the outer edge as pages advance.
+    % \fey measured from the (bleed-raised) top edge, so add \fmbl; x shifts in by \fmbl.
+    \pgfmathsetmacro{\fey}{14+\fmbl+\fmfrac*118}%
+    \pgfmathsetmacro{\fmtr}{-5+\fmbl}\pgfmathsetmacro{\fmtl}{2.4-\fmbl}%
     \ifodd\value{page}
-      \fill[ink] ([xshift=-5mm,yshift=-\fey mm]current page.north east) rectangle ++(2.6mm,1.7mm);
+      \fill[ink] ([xshift=\fmtr mm,yshift=-\fey mm]current page.north east) rectangle ++(2.6mm,1.7mm);
     \else
-      \fill[ink] ([xshift=2.4mm,yshift=-\fey mm]current page.north west) rectangle ++(2.6mm,1.7mm);
+      \fill[ink] ([xshift=\fmtl mm,yshift=-\fey mm]current page.north west) rectangle ++(2.6mm,1.7mm);
     \fi
   \end{tikzpicture}}
 \pagestyle{fancy}\fancyhf{}

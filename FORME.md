@@ -171,7 +171,19 @@ are safe to use anywhere the `[bw]` master has to hold.
 \usepackage[color]{forme}      % slate ink + signal red (the colour master)
 \usepackage[bw]{forme}         % true black, signal→ink (the print master)
 \usepackage[bw,cropmarks]{forme}  % adds camera/registration marks (needs crop.sty + a larger sheet)
+\usepackage[bw,bleed]{forme}   % +5mm print bleed on every side for the press
 ```
+
+Colours are defined in **CMYK** (the press wants CMYK, not RGB); the hex/sRGB
+values in the table above remain authoritative for screen, and the CMYK builds
+here are what the package emits.
+
+`bleed` grows the sheet by 5 mm on every side **and** adds 5 mm to every margin,
+so the text block — and therefore line breaks and the page count — is identical
+to the no-bleed build; only extra paper appears outside the trim. The foot
+timeline, folio, and fore-edge tab are anchored to page edges, so `bleed` shifts
+each of them back inward by 5 mm to stay on the trimmed page. Use it for the file
+you hand the printer; use the plain build for screen/proof.
 
 `color` (or `colour`) is the default. `bw` is the one you send to a mono press or
 a photocopier. `cropmarks` overlays registration marks on an oversized sheet for

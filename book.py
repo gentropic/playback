@@ -835,7 +835,12 @@ reproduce: clone the repo,\\ then python3 book.py
         lab=MS_AT.get(idx,"")
         body_parts.append(rf"\pagebeat{{{idx/N:.4f}}}{{{lab}}}"+"\n"+ps)
     body="\n".join(body_parts)
-    for mode,fn in [("color",f"the_book_{suffix}color.tex"),("bw",f"the_book_{suffix}bw.tex")]:
+    builds=[("color",f"the_book_{suffix}color.tex"),("bw",f"the_book_{suffix}bw.tex")]
+    # print master: compact bw WITH 5mm bleed (Futura miolo gabarito wants it).
+    # Same body -> must yield the same N; [bleed] grows paper+margins equally so
+    # the text block (line breaks, pagination) is unchanged. Verified in build.
+    if compact: builds.append(("bw,bleed",f"the_book_{suffix}bw_bleed.tex"))
+    for mode,fn in builds:
         doc=("\\documentclass[11pt]{article}\n\\usepackage[%s]{forme}\n"%mode
              +"\\begin{document}\n\\def\\fmticks{%s}\n"%MS_TICKS+body+"\n\\end{document}\n")
         open(fn,"w",encoding="utf-8").write(doc)
