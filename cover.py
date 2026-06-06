@@ -156,7 +156,7 @@ def doc(show_guides):
     return rf"""\documentclass{{article}}
 \usepackage[paperwidth={TOTAL_W}mm,paperheight={H}mm,margin=0mm]{{geometry}}
 \usepackage{{fontspec}}\usepackage{{xcolor}}\usepackage{{tikz}}
-% CMYK for press output (Futura: "CMYK, never RGB"); builds per FORME.md.
+% CMYK for press output (Futura: "CMYK, never RGB"); builds per docs/FORME.md.
 \definecolor{{ink}}{{cmyk}}{{0.47,0.18,0,0.80}}\definecolor{{signal}}{{cmyk}}{{0,0.70,0.65,0.14}}\definecolor{{paper}}{{cmyk}}{{0,0,0,0}}
 \setmainfont{{Barlow}}[Path={FONTS},UprightFont=Barlow-Regular.ttf,BoldFont=Barlow-Bold.ttf,ItalicFont=Barlow-Italic.ttf,BoldItalicFont=Barlow-BoldItalic.ttf]
 \newfontfamily\mono{{Space Mono}}[Path={FONTS},UprightFont=SpaceMono-Regular.ttf,BoldFont=SpaceMono-Bold.ttf,ItalicFont=SpaceMono-Italic.ttf,BoldItalicFont=SpaceMono-BoldItalic.ttf]

@@ -62,6 +62,8 @@ SHA-256 of `book.py` + `forme.sty` so any copy can be traced to its source.
 - `book.py` — the generator: game engines, renderers, and per-edition assembly.
 - `forme.sty` — *Forme*, the LaTeX style (A6 geometry, palette, fonts, the foot timeline and fore-edge index). A print companion to the Switchboard design system.
 - `cover.py` — the hardcover cover/wrap generator.
+- `make_pdfx.sh` — wraps the press files as PDF/X-1a (curves, CMYK, trim/bleed).
+- `docs/` — design notes: [`FORME.md`](docs/FORME.md) (the style), [`GAMEBOOK_SPEC.md`](docs/GAMEBOOK_SPEC.md) (a reusable gamebook-engine sketch), [`DISTRIBUTION.md`](docs/DISTRIBUTION.md) (how the book reaches people), [`AFFINITY_USAGE.md`](docs/AFFINITY_USAGE.md) (MCP experiments).
 
 ## Print specifications
 

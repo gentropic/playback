@@ -29,3 +29,6 @@ dist/
 # Local Claude Code context (not shared)
 CLAUDE.md
 .claude/
+.claude.json
+.claude.json.backup
+.mcp.json
