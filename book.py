@@ -820,9 +820,8 @@ After each move, turn to the page shown --- the book has already replied, its mo
 {\color{signal}\rule{3cm}{1pt}}\\[8pt]
 {\ttfamily\small
 {\raggedright\textbf{The Book That Plays Back}\par\smallskip
-Every reply was precomputed by minimax, with a trap-maximising tie-break, then laid
-out by book.py. The result is fully deterministic --- this exact book rebuilds from
-the seed below.\par}
+Every reply precomputed by minimax (trap-maximising tie-break), laid out by book.py.
+Fully deterministic --- rebuilds from the seed below.\par}
 \smallskip
 random seed \dotfill 43\\
 pages \dotfill %d\\
@@ -830,14 +829,13 @@ games \dotfill 5\\
 positions \dotfill %d\\
 matchboxes \dotfill %d\\
 source \dotfill %s\\
-github \dotfill gentropic/playback\\[7pt]
+github \dotfill gentropic/playback\\[5pt]
 {\raggedright Typeset with \textbf{Forme}, a print companion to Switchboard. Barlow \&
-Space Mono, both OFL. Code MIT; text \& figures CC0.\par}
-\smallskip
-{\raggedright Printed by Futura Express, Belo Horizonte, 2026.\\
-Miolo P\'olen 90\,g; capa dura, couch\'e fosco.\par}
-\smallskip
-reproduce: clone the repo,\\ then python3 book.py
+Space Mono, both OFL. Code MIT; text \& figures CC0.\par\smallskip
+Written by Arthur Endlein Correia with Claude Opus 4.8 (Anthropic), 2026.\par\smallskip
+Printed by Futura Express, Belo Horizonte, 2026.
+Miolo P\'olen 90\,g; capa dura, couch\'e fosco.\par\smallskip
+reproduce: clone the repo, then python3 book.py\par}
 }
 """ % (N, POS_TOTAL, len(KIT_POSITIONS), SRC_HASH))
     DIV="\n"+r"\begin{center}{\color{signal}\rule{0.55\linewidth}{0.4pt}}\end{center}"+"\n"
