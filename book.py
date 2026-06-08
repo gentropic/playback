@@ -815,9 +815,9 @@ After each move, turn to the page shown --- the book has already replied, its mo
 """ % (REF(ttt_B),REF(ttt_A),REF(('hp',HP_START)),REF(NK_KEY),REF(NIM_KEY),REF(SUB_KEY),
        str(ESSAY_P0),str(SG_P0),str(GLOSS_P),str(SOURCES_P),str(KIT_P0),str(CERT_P),str(COLO_P),note_tail))
     KIT_PAGES=build_kit(REF(('hp',HP_START)), str(ESSAY_P0))
-    COLO = (r"""\thispagestyle{fancy}\vspace*{0.4cm}
+    COLO = (r"""\thispagestyle{fancy}\vspace*{0.15cm}
 {\ttfamily\bfseries\Large Colophon}\\[5pt]
-{\color{signal}\rule{3cm}{1pt}}\\[10pt]
+{\color{signal}\rule{3cm}{1pt}}\\[8pt]
 {\ttfamily\small
 {\raggedright\textbf{The Book That Plays Back}\par\smallskip
 Every reply was precomputed by minimax, with a trap-maximising tie-break, then laid
@@ -833,6 +833,9 @@ source \dotfill %s\\
 github \dotfill gentropic/playback\\[7pt]
 {\raggedright Typeset with \textbf{Forme}, a print companion to Switchboard. Barlow \&
 Space Mono, both OFL. Code MIT; text \& figures CC0.\par}
+\smallskip
+{\raggedright Printed by Futura Express, Belo Horizonte, 2026.\\
+Miolo P\'olen 90\,g; capa dura, couch\'e fosco.\par}
 \smallskip
 reproduce: clone the repo,\\ then python3 book.py
 }
