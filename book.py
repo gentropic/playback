@@ -815,13 +815,12 @@ After each move, turn to the page shown --- the book has already replied, its mo
 """ % (REF(ttt_B),REF(ttt_A),REF(('hp',HP_START)),REF(NK_KEY),REF(NIM_KEY),REF(SUB_KEY),
        str(ESSAY_P0),str(SG_P0),str(GLOSS_P),str(SOURCES_P),str(KIT_P0),str(CERT_P),str(COLO_P),note_tail))
     KIT_PAGES=build_kit(REF(('hp',HP_START)), str(ESSAY_P0))
-    COLO = (r"""\thispagestyle{fancy}\vspace*{0.15cm}
+    COLO = (r"""\thispagestyle{fancy}\vspace*{0.3cm}
 {\ttfamily\bfseries\Large Colophon}\\[5pt]
-{\color{signal}\rule{3cm}{1pt}}\\[8pt]
+{\color{signal}\rule{3cm}{1pt}}\\[10pt]
 {\ttfamily\small
-{\raggedright\textbf{The Book That Plays Back}\par\smallskip
-Every reply precomputed by minimax (trap-maximising tie-break), laid out by book.py.
-Fully deterministic --- rebuilds from the seed below.\par}
+{\raggedright\textbf{The Book That Plays Back}\\
+Every reply precomputed by minimax, then laid out by book.py.\par}
 \smallskip
 random seed \dotfill 43\\
 pages \dotfill %d\\
@@ -829,7 +828,8 @@ games \dotfill 5\\
 positions \dotfill %d\\
 matchboxes \dotfill %d\\
 source \dotfill %s\\
-github \dotfill gentropic/playback\\[5pt]
+github \dotfill gentropic/playback\\
+doi \dotfill 10.5281/zenodo.20597502\\[4pt]
 {\raggedright Typeset with \textbf{Forme}, a print companion to Switchboard. Barlow \&
 Space Mono, both OFL. Code MIT; text \& figures CC0.\par\smallskip
 Written by Arthur Endlein Correia with Claude Opus 4.8 (Anthropic), 2026.\par\smallskip
