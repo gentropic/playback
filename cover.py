@@ -197,10 +197,10 @@ def doc(show_guides):
 % blurb vertically centred in the panel (optical balance between top air and the
 % footer/barcode row); anchor=west pins its mid-height to the panel centre line.
 \node[paper,align=left,font=\mono\footnotesize,text width=82mm,anchor=west] at ({back_x0+SAFE},{H/2})
-  {{A book you play against. Make a move, turn to the page it sends you to. It has
-    already replied.\\[4pt]
-    Five games live inside. At tic-tac-toe, hexapawn and notakto it
-    \textbf{{cannot lose}}; at twenty-one it always wins. But at nim it has left one
+  {{A book you play against. Make your move by turning to its page. It has already
+    replied.\\[4pt]
+    Five games live inside. At tic-tac-toe, hexapawn and notakto, it
+    \textbf{{cannot lose}}; at twenty-one, it always wins. At nim, it has left but one
     crack --- play perfectly and you can \textbf{{beat it}}.\\[4pt]
     310 pages, 229 decisions, every reply precomputed by minimax --- and a matchbox
     machine that teaches itself to play.}};
