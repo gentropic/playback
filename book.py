@@ -300,7 +300,7 @@ def ttt_tikz(b,last,sc=0.95):
         cx,cy=i%3+0.5,3-i//3-0.5
         if i==last:
             r.append(rf"\draw[ink,line width=1pt] ({cx},{cy}) circle (0.42);")
-            r.append(rf"\node at ({cx},{cy}) {{\bookmark{{{v}}}}};")
+            r.append(rf"\node at ({cx},{cy}) {{\bookmarkr{{{v}}}}};")
         else:
             r.append(rf"\node at ({cx},{cy}) {{\pmark{{{v}}}}};")
     r.append(r"\end{tikzpicture}"); return "\n".join(r)
@@ -313,7 +313,7 @@ def ttt_nav(b,last,cellpages,sc=1.05):
         if v!='.':
             if i==last:
                 r.append(rf"\draw[ink,line width=1pt] ({cx},{cy}) circle (0.42);")
-                r.append(rf"\node at ({cx},{cy}) {{\bookmark{{{v}}}}};")
+                r.append(rf"\node at ({cx},{cy}) {{\bookmarkr{{{v}}}}};")
             else:
                 r.append(rf"\node at ({cx},{cy}) {{\pmark{{{v}}}}};")
         elif i in cellpages:
