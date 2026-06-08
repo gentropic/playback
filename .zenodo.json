@@ -1,0 +1,23 @@
+{
+  "title": "The Book That Plays Back",
+  "upload_type": "publication",
+  "publication_type": "book",
+  "description": "A print gamebook you play against: make a move, turn to the page it sends you to, and the book has already replied — every answer precomputed by minimax with a trap-maximising tie-break. Five games (tic-tac-toe, hexapawn, notakto, nim, twenty-one), a history-of-machines foot timeline, essays on the MENACE matchbox learner and the Sprague–Grundy theorem, a glossary, a cut-out matchbox kit, and a certificate. Generated deterministically by a short Python program (book.py) from random seed 43, typeset with Forme, compiled with XeLaTeX; rebuilds byte-identically from source. Print edition ISBN 978-65-02-14290-5. The book (text and figures) is dedicated to the public domain under CC0 1.0; the code is MIT.",
+  "creators": [
+    { "name": "Correia, Arthur Endlein" }
+  ],
+  "license": "cc-zero",
+  "access_right": "open",
+  "keywords": [
+    "combinatorial game theory",
+    "tic-tac-toe",
+    "nim",
+    "minimax",
+    "Sprague-Grundy theorem",
+    "generative book",
+    "reproducible build",
+    "gamebook",
+    "geoscientific chaos union"
+  ],
+  "notes": "Code MIT, content CC0 (dual-licensed). ISBN 978-65-02-14290-5. Publisher: Ed. do Autor / Geoscientific Chaos Union, Belo Horizonte, 2026."
+}

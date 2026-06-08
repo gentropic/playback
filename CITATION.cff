@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+title: "The Book That Plays Back"
+message: "If you use or cite this work, please cite it as below."
+type: book
+authors:
+  - family-names: "Correia"
+    given-names: "Arthur Endlein"
+abstract: >-
+  A print gamebook you play against: make a move, turn to the page it
+  sends you to, and the book has already replied. Every answer was
+  precomputed by minimax (with a trap-maximising tie-break). Five games
+  inside (tic-tac-toe, hexapawn, notakto, nim, twenty-one), a
+  history-of-machines timeline along the page foot, essays on the MENACE
+  matchbox learning machine and the Sprague-Grundy theorem, a glossary,
+  a cut-out matchbox kit, and a certificate. Generated deterministically
+  by a short Python program (book.py) from random seed 43, typeset with
+  Forme and compiled with XeLaTeX; rebuilds byte-identically from source.
+keywords:
+  - combinatorial game theory
+  - tic-tac-toe
+  - nim
+  - minimax
+  - Sprague-Grundy
+  - generative book
+  - reproducible
+  - gamebook
+version: "1.0"
+date-released: "2026-01-01"
+license: CC0-1.0          # the BOOK (content). The code is MIT (see LICENSE).
+identifiers:
+  - type: other
+    value: "ISBN 978-65-02-14290-5"
+    description: "Print edition ISBN (Câmara Brasileira do Livro)"
+repository-code: "https://github.com/gentropic/playback"
